@@ -1,0 +1,27 @@
+{
+  "name": "המשימות שלי",
+  "short_name": "משימות",
+  "description": "רשימת המשימות האישית שלי - במקום הודעות WhatsApp לעצמי",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8FA",
+  "theme_color": "#FFF8FA",
+  "dir": "rtl",
+  "lang": "he",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

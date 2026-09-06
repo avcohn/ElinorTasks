@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <title>המשימות שלי</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#FFF8FA" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="משימות" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" href="icons/icon-192.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="app-title">המשימות שלי</h1>
+      <p class="app-greeting" id="greetingText">בוקר טוב</p>
+      <p class="app-subtitle" id="subtitleText">מה צריך לעשות היום?</p>
+      <button class="search-toggle" id="searchToggle" aria-label="חיפוש משימות" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+          <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Search bar (hidden by default) -->
+    <div class="search-bar" id="searchBar" hidden>
+      <input type="text" id="searchInput" placeholder="חיפוש לפי שם משימה..." aria-label="חיפוש לפי שם משימה" />
+      <button type="button" id="searchClose" aria-label="סגירת חיפוש">✕</button>
+    </div>
+
+    <!-- Add task card -->
+    <form class="add-task-card" id="addTaskForm">
+      <input
+        type="text"
+        id="newTaskInput"
+        class="add-task-input"
+        placeholder="מה צריך לעשות?"
+        aria-label="הוספת משימה חדשה"
+        autocomplete="off"
+        maxlength="200"
+      />
+      <button type="submit" class="add-task-btn" aria-label="הוספת משימה">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+          <line x1="5" y1="12" x2="19" y2="12" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </form>
+
+    <!-- Filters -->
+    <div class="filters" role="tablist" aria-label="סינון משימות">
+      <button class="filter-chip is-active" data-filter="all" role="tab" aria-selected="true" type="button">הכול</button>
+      <button class="filter-chip" data-filter="today" role="tab" aria-selected="false" type="button">היום</button>
+      <button class="filter-chip" data-filter="important" role="tab" aria-selected="false" type="button">חשובות</button>
+    </div>
+
+    <!-- Counter -->
+    <p class="task-counter" id="taskCounter" aria-live="polite">טוען משימות...</p>
+
+    <!-- Connection banner -->
+    <div class="offline-banner" id="offlineBanner" hidden>אין כרגע חיבור לאינטרנט. השינויים יסונכרנו כשהחיבור יחזור.</div>
+
+    <!-- Task list -->
+    <ul class="task-list" id="taskList" aria-label="רשימת משימות פתוחות"></ul>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="emptyState" hidden>
+      <p class="empty-emoji">🎉</p>
+      <p class="empty-title">אין משימות פתוחות</p>
+      <p class="empty-subtitle">אפשר לנוח קצת או להוסיף משהו חדש</p>
+    </div>
+
+    <!-- Completed section -->
+    <section class="completed-section" id="completedSection" hidden>
+      <button class="completed-toggle" id="completedToggle" type="button" aria-expanded="false">
+        <span id="completedToggleLabel">הושלמו 0</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <ul class="task-list completed-list" id="completedList" hidden aria-label="משימות שהושלמו"></ul>
+      <button class="clear-completed-btn" id="clearCompletedBtn" type="button" hidden>נקה משימות שהושלמו</button>
+    </section>
+
+  </div>
+
+  <!-- Bottom navigation -->
+  <nav class="bottom-nav" aria-label="ניווט ראשי">
+    <button class="nav-item is-active" type="button" aria-current="page">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9 11l3 3 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>משימות</span>
+    </button>
+    <button class="nav-item is-disabled" type="button" disabled>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 2l1.5 5M18 2l-1.5 5M3 7h18l-2 12a2 2 0 01-2 2H7a2 2 0 01-2-2L3 7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>סופר</span>
+    </button>
+    <button class="nav-item is-disabled" type="button" disabled>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M8 4h13M8 12h13M8 20h13M3 4h.01M3 12h.01M3 20h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>רשימות</span>
+    </button>
+  </nav>
+
+  <!-- Bottom sheet: edit task -->
+  <div class="sheet-overlay" id="sheetOverlay" hidden>
+    <div class="bottom-sheet" id="editSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sheet-handle"></div>
+      <h2 class="sheet-title" id="sheetTitle">עריכת משימה</h2>
+
+      <label class="sheet-label" for="editTitleInput">שם המשימה</label>
+      <input type="text" id="editTitleInput" class="sheet-input" maxlength="200" />
+
+      <label class="sheet-label">תאריך יעד</label>
+      <div class="date-options" id="dateOptions">
+        <button type="button" class="date-chip" data-date-option="today">היום</button>
+        <button type="button" class="date-chip" data-date-option="tomorrow">מחר</button>
+        <button type="button" class="date-chip" data-date-option="pick">בחירת תאריך</button>
+        <button type="button" class="date-chip" data-date-option="none">ללא תאריך</button>
+      </div>
+      <input type="date" id="customDateInput" class="sheet-input" hidden />
+
+      <label class="sheet-label" for="editCategorySelect">קטגוריה</label>
+      <select id="editCategorySelect" class="sheet-input">
+        <option value="personal">אישי</option>
+        <option value="home">בית</option>
+        <option value="work">עבודה</option>
+        <option value="other">אחר</option>
+      </select>
+
+      <label class="sheet-toggle-row">
+        <span>משימה חשובה</span>
+        <input type="checkbox" id="editImportantCheckbox" />
+        <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+      </label>
+
+      <div class="sheet-actions">
+        <button type="button" class="sheet-btn sheet-btn-secondary" id="cancelEditBtn">ביטול</button>
+        <button type="button" class="sheet-btn sheet-btn-primary" id="saveEditBtn">שמור</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirm dialog -->
+  <div class="sheet-overlay" id="deleteOverlay" hidden>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="deleteTitle">
+      <p class="confirm-title" id="deleteTitle">למחוק את המשימה?</p>
+      <div class="confirm-actions">
+        <button type="button" class="sheet-btn sheet-btn-secondary" id="cancelDeleteBtn">ביטול</button>
+        <button type="button" class="sheet-btn sheet-btn-danger" id="confirmDeleteBtn">מחיקה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear completed confirm dialog -->
+  <div class="sheet-overlay" id="clearCompletedOverlay" hidden>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="clearTitle">
+      <p class="confirm-title" id="clearTitle">למחוק לצמיתות את כל המשימות שהושלמו?</p>
+      <div class="confirm-actions">
+        <button type="button" class="sheet-btn sheet-btn-secondary" id="cancelClearBtn">ביטול</button>
+        <button type="button" class="sheet-btn sheet-btn-danger" id="confirmClearBtn">מחיקה</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <span class="toast-message" id="toastMessage"></span>
+    <button type="button" class="toast-action" id="toastAction" hidden></button>
+  </div>
+
+  <!-- Task item template -->
+  <template id="taskItemTemplate">
+    <li class="task-item" tabindex="0">
+      <button class="task-checkbox" type="button" aria-label="סימון כבוצע">
+        <svg class="checkmark" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="task-body">
+        <p class="task-title"></p>
+        <div class="task-meta">
+          <span class="task-date"></span>
+          <span class="task-category"></span>
+        </div>
+      </div>
+      <span class="task-star" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2l2.9 6.6 7.1.7-5.4 4.7 1.6 7-6.2-3.8L5.8 21l1.6-7-5.4-4.7 7.1-.7L12 2z"/>
+        </svg>
+      </span>
+      <button class="task-menu-btn" type="button" aria-label="אפשרויות נוספות" aria-haspopup="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <circle cx="12" cy="5" r="1.8"/>
+          <circle cx="12" cy="12" r="1.8"/>
+          <circle cx="12" cy="19" r="1.8"/>
+        </svg>
+      </button>
+      <div class="task-menu" hidden>
+        <button type="button" data-action="edit">עריכה</button>
+        <button type="button" data-action="toggle-important">סימון כחשוב</button>
+        <button type="button" data-action="change-date">שינוי תאריך</button>
+        <button type="button" data-action="delete">מחיקה</button>
+      </div>
+    </li>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
