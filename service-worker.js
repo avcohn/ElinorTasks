@@ -4,7 +4,7 @@
 // חיבור. נתוני המשימות עצמם מגיעים מ-Supabase ולא מנוהלים כאן.
 // =====================================================================
 
-const CACHE_NAME = "hamesimot-sheli-v1";
+const CACHE_NAME = "hamesimot-sheli-v2";
 
 const APP_SHELL = [
   "./",
