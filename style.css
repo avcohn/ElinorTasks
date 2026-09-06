@@ -32,6 +32,15 @@
   box-sizing: border-box;
 }
 
+/* חשוב: כמה אלמנטים (חלונות מודאליים, שורת חיפוש, רשימת משימות)
+   מקבלים display: flex בכללי CSS למטה. בלי השורה הזו, ה-attribute
+   "hidden" שה-JS מפעיל (למשל el.sheetOverlay.hidden = true) נדרס
+   על ידי אותם כללים ולא מסתיר בפועל את האלמנט - זה הבאג שגרם
+   לכמה חלונות (חיפוש, עריכה, אישור מחיקה) להיראות פתוחים בו-זמנית. */
+[hidden] {
+  display: none !important;
+}
+
 html, body {
   margin: 0;
   padding: 0;
